@@ -23,7 +23,7 @@
             android:layout_alignParentTop="true"
             android:id="@+id/texty"/>
 
-        <!--<EditText
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/test">
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:onClick="clicky"
             android:text="Retrieve Song"
-            android:id="@+id/button"/>-->
+            android:id="@+id/button"/>
 
     </TableLayout>
 

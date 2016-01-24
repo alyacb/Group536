@@ -3,17 +3,15 @@ import Starscream
 
 class ViewController: UIViewController, WebSocketDelegate {
 
-	@IBOutlet weak var accelerationProgressBar: UIProgressView!
-	@IBOutlet weak var helloLabel: UILabel!
-	@IBOutlet weak var accelerationLabel: UILabel!
-	@IBOutlet weak var armLabel: UILabel!
 	@IBOutlet weak var gyroscopeLabel: UILabel!
-
+	@IBOutlet weak var status: UILabel!
+	
 	var currentZ: Float = 0.0
 	var lastZ: Float = 0.0
 	var theMax: Float = 0.0
 	var theMin: Float = 0.0
 	var message = ""
+	var controller: UINavigationController? = nil
 
 	var socket = WebSocket(url: NSURL(string: "ws://f732a04e.ngrok.io")!)
 
@@ -29,8 +27,8 @@ class ViewController: UIViewController, WebSocketDelegate {
 
 	@IBAction func didTapSettings(sender: AnyObject) {
 		// Settings view must be in a navigation controller when presented
-		let controller = TLMSettingsViewController.settingsInNavigationController()
-		presentViewController(controller, animated: true, completion: nil)
+		controller = TLMSettingsViewController.settingsInNavigationController()
+		presentViewController(controller!, animated: true, completion: nil)
 	}
 
 	func didRecieveGyroScopeEvent(notification: NSNotification) {
@@ -52,7 +50,7 @@ class ViewController: UIViewController, WebSocketDelegate {
 //			print("ping")
 
 			let dataString = "{ \"timestamp\": \(date), \"peak\": \(theMax), \"trough\": \(theMin) }"
-//			print("\(theMax), \(theMin)")
+			NSLog("\(theMax), \(theMin)")
 
 			socket.writeString(dataString)
 
@@ -60,7 +58,7 @@ class ViewController: UIViewController, WebSocketDelegate {
 			theMin = 0
 		}
 
-		gyroscopeLabel.text = "Gyro: \(currentZ))"
+		gyroscopeLabel.text = "Gyro: \(currentZ)"
 		lastZ = currentZ
 
 	}
@@ -69,28 +67,46 @@ class ViewController: UIViewController, WebSocketDelegate {
 	// MARK: - websocket stuff
 
 	func websocketDidConnect(ws: WebSocket) {
-		print("websocket is connected")
+		NSLog("websocket is connected")
 	}
 
 	func websocketDidDisconnect(ws: WebSocket, error: NSError?) {
 		if let e = error {
-			print("websocket is disconnected: \(e.localizedDescription)")
+			NSLog("websocket is disconnected: \(e.localizedDescription)")
 		} else {
-			print("websocket disconnected")
+			NSLog("websocket disconnected")
 		}
+
+		self.controller?.dismissViewControllerAnimated(true, completion: nil)
+
 	}
 
 	func websocketDidReceiveMessage(ws: WebSocket, text: String) {
 		if message != text {
-			print("Updated gait: \(text)")
+			NSLog("Updated gait: \(text)")
 		}
 		message = text
+		let regex = "(sprinting|running|walking|standing|unknown)"
+		let re = try! NSRegularExpression(pattern: regex, options: [])
+
+		let result = re.firstMatchInString(text as String, options: [], range: NSMakeRange(0, (text as NSString).length))
+
+		if let result = result {
+			self.status.text = (text as NSString).substringWithRange(result.rangeAtIndex(1))
+		}
+
 
 	}
 
 	func websocketDidReceiveData(ws: WebSocket, data: NSData) {
-		print("Received data: \(data.length)")
+		NSLog("Received data: \(data.length)")
 	}
 
+	@IBAction func toConnectServer(sender: UIButton) {
+		socket.connect()
+	}
+	@IBAction func toDisconnectServer(sender: UIButton) {
+		socket.disconnect()
+	}
 }
 

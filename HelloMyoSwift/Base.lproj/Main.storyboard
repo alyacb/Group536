@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
@@ -17,59 +16,61 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2wO-pC-NvH">
-                                <rect key="frame" x="137" y="503" width="59" height="30"/>
-                                <state key="normal" title="Connect">
-                                    <color key="titleColor" red="0.0" green="0.73333333329999995" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unknown" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ROi-7e-oIt">
+                                <rect key="frame" x="76" y="50" width="168" height="48"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5sf-bM-I4j">
+                                <rect key="frame" x="74" y="128" width="173" height="42"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="Connect Server"/>
+                                <connections>
+                                    <action selector="toConnectServer:" destination="BYZ-38-t0r" eventType="touchUpInside" id="7sv-K2-J30"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fU0-g5-Jxl">
+                                <rect key="frame" x="58" y="200" width="204" height="42"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="Disconnect Server"/>
+                                <connections>
+                                    <action selector="toDisconnectServer:" destination="BYZ-38-t0r" eventType="touchUpInside" id="MkD-vl-A8D"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2wO-pC-NvH">
+                                <rect key="frame" x="89" y="272" width="143" height="42"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="ConnectMyo"/>
                                 <connections>
                                     <action selector="didTapSettings:" destination="BYZ-38-t0r" eventType="touchUpInside" id="o9N-T7-Ayp"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lmv-QN-5ba">
-                                <rect key="frame" x="16" y="260" width="288" height="47"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="vkn-l2-C7Y">
-                                <rect key="frame" x="16" y="74" width="288" height="2"/>
-                            </progressView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heX-Kw-XKs">
-                                <rect key="frame" x="16" y="82" width="288" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Acceleration" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xg5-vp-cjb">
-                                <rect key="frame" x="16" y="35" width="288" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w4e-Bt-NHp">
-                                <rect key="frame" x="22" y="463" width="282" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uc2-TY-5wv">
-                                <rect key="frame" x="16" y="463" width="293" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Gyro: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uc2-TY-5wv">
+                                <rect key="frame" x="128" y="344" width="66" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="uc2-TY-5wv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="0zT-56-zRp"/>
+                            <constraint firstItem="ROi-7e-oIt" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="3EO-Ox-Nrn"/>
+                            <constraint firstItem="fU0-g5-Jxl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="66Q-sq-ImB"/>
+                            <constraint firstItem="ROi-7e-oIt" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="30" id="Czf-BZ-7ap"/>
+                            <constraint firstItem="5sf-bM-I4j" firstAttribute="top" secondItem="ROi-7e-oIt" secondAttribute="bottom" constant="30" id="E8g-IX-2qw"/>
+                            <constraint firstItem="fU0-g5-Jxl" firstAttribute="top" secondItem="5sf-bM-I4j" secondAttribute="bottom" constant="30" id="EV1-NL-sb7"/>
+                            <constraint firstItem="2wO-pC-NvH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="RPo-pM-ex8"/>
+                            <constraint firstItem="2wO-pC-NvH" firstAttribute="top" secondItem="fU0-g5-Jxl" secondAttribute="bottom" constant="30" id="Sa0-su-EJG"/>
+                            <constraint firstItem="5sf-bM-I4j" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="pXk-0R-TJg"/>
+                            <constraint firstItem="uc2-TY-5wv" firstAttribute="top" secondItem="2wO-pC-NvH" secondAttribute="bottom" constant="30" id="y6M-0e-Rrx"/>
+                        </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
-                        <outlet property="accelerationLabel" destination="xg5-vp-cjb" id="p3z-iC-ZDT"/>
-                        <outlet property="accelerationProgressBar" destination="vkn-l2-C7Y" id="FK6-SN-VkV"/>
-                        <outlet property="armLabel" destination="heX-Kw-XKs" id="epX-fC-Rz5"/>
                         <outlet property="gyroscopeLabel" destination="uc2-TY-5wv" id="GbH-di-kvI"/>
-                        <outlet property="helloLabel" destination="lmv-QN-5ba" id="jbg-p4-TI9"/>
+                        <outlet property="status" destination="ROi-7e-oIt" id="tL6-ed-Zad"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

@@ -1,0 +1,332 @@
+package jackassco.musicplayer;
+
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.media.MediaPlayer;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TextView;
+
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class MainActivity extends AppCompatActivity {
+
+    private MediaPlayer singer;
+    private int currentSongID;
+    private Song[] songsList;
+    private Timer monitorSpeed;
+    private String currentState;
+    private String lastState;
+    private int count;
+    private WebSocketClient mWebSocketClient;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        buildSongBase();
+
+        singer = new MediaPlayer();
+
+        currentSongID = 0;
+        singer = mkReadyToPlay(songsList[currentSongID].getTitle());
+        //displayCurrentSongInfo();
+
+        monitorSpeed = new Timer();
+        monitorSpeed.scheduleAtFixedRate(new DecisionMaker(), 10, 100);
+
+        lastState ="standing";
+        currentState ="standing";
+        count = 0;
+
+        connectWebSocket();
+    }
+
+    class DecisionMaker extends TimerTask {
+        @Override
+        public void run() {
+            if(count>5) {
+                lastState = currentState;
+                chooseAudioToPlay(currentState);
+            }
+            if(!currentState.equals(lastState)){
+                count++;
+            } else if (count>0) count--;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void playAudio(View view) {
+        int id = view.getId();
+        try {
+            if (id != currentSongID) {
+                currentSongID = id;
+                singer.reset();
+                singer.release();
+                singer = mkReadyToPlay(songsList[currentSongID].getTitle());
+            }
+            if (singer.isPlaying()) {
+                singer.pause();
+            } else {
+                singer.start();
+            }
+            displayCurrentSongInfo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playAudio(int id){
+        try {
+            currentSongID = id;
+            singer.reset();
+            singer.release();
+            singer = mkReadyToPlay(songsList[currentSongID].getTitle());
+            displayCurrentSongInfo();
+            singer.start();
+        } catch (Exception e){
+            //Bad Song Id
+        }
+    }
+
+    private String[] listSongs(){
+        String[] list = null;
+
+        try {
+            list = getAssets().list("");
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    private void buildSongBase(){
+        String[] songs = listSongs();
+        ArrayList<Song> los = new ArrayList<>();
+
+        TableLayout lip;
+        for(int i=0; i<songs.length; i++){
+            if(songs[i].endsWith(".mp3")) {
+                Button b = new Button(this);
+                b.setId(los.size());
+                b.setText(songs[i].substring(0, songs[i].length() - 6));
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playAudio(v);
+                    }
+                });
+                lip = (TableLayout) findViewById(R.id.biggy);
+                lip.addView(b);
+                int speed;
+                try {
+                    String s = songs[i].substring(songs[i].length() - 5, songs[i].length() - 4);
+                    //System.out.println(s);
+                    speed = Integer.parseInt(s);
+                } catch(Exception e){
+                    speed  = -1;
+                }
+                los.add(new Song(songs[i], speed));
+            }
+        }
+        songsList = new Song[los.size()];
+        songsList = los.toArray(songsList);
+    }
+
+    private FileInputStream getSongFile(String song) {
+        FileInputStream x = null;
+
+        AssetManager am  = this.getAssets();
+        try {
+            AssetFileDescriptor filedesc = am.openFd(song);
+            x = filedesc.createInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return x;
+    }
+
+    private MediaPlayer mkReadyToPlay(String song){
+        MediaPlayer mp = new MediaPlayer();
+
+        AssetManager am  = this.getAssets();
+        AssetFileDescriptor filedesc;
+        try {
+            filedesc = am.openFd(song);
+            mp.setDataSource(filedesc.getFileDescriptor(), filedesc.getStartOffset(), filedesc.getLength());
+            filedesc.close();
+            mp.prepare();
+        } catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return mp;
+    }
+
+    private void displayCurrentSongInfo(){
+        String speed = "";
+        switch(songsList[currentSongID].getSpeed()){
+            case Song.STAND:
+                speed = "Calm (Stand)";
+                break;
+            case Song.WALK:
+                speed = "Standard (Walk)";
+                break;
+            case Song.JOG:
+                speed = "Spry (Jog)";
+                break;
+            case Song.SPRINT:
+                speed = "Fast (Sprint)";
+                break;
+            default:
+                speed = "Unknown";
+        }
+
+        TextView tty = (TextView) findViewById(R.id.current_song_info);
+        tty.setText(songsList[currentSongID].getTitle()+ ", " + speed);
+
+    }
+
+    public void printToUserStateTextView(String state){
+        currentState = state;
+        String pattern = "(sprinting|running|walking|standing|unknown)";
+        // Create a Pattern object
+        Pattern r = Pattern.compile(pattern);
+
+        // Now create matcher object.
+        Matcher m = r.matcher(currentState);
+        if (m.find()) {
+            currentState = m.group(0);
+            //System.out.println("Found value: " + m.group(0) );
+        } else {
+            //System.out.println("NO MATCH");
+        }
+
+        TextView ttz = (TextView) findViewById(R.id.current_stat_info);
+        ttz.setText(currentState);
+    }
+
+    public void chooseAudioToPlay(String speedS){
+        int speed;
+        switch(speedS){
+            case "standing":
+                speed = Song.STAND;
+                break;
+            case "walking":
+                speed = Song.WALK;
+                break;
+            case "running":
+                speed = Song.JOG;
+                break;
+            case "sprinting":
+                speed = Song.SPRINT;
+                break;
+            default:
+                speed = -1;
+        }
+
+        for(int i=0; i<songsList.length; i++){
+            if(songsList[i].getSpeed()==speed){
+                currentSongID = i;
+                playAudio(i);
+                singer.start();
+                displayCurrentSongInfo();
+                return;
+            }
+        }
+    }
+
+    /*public void clicky(View v){
+        currentState = String.valueOf(((EditText) findViewById(R.id.test)).getText());
+        printToUserStateTextView(currentState);
+    }*/
+
+    private void connectWebSocket() {
+        URI uri;
+        try {
+            uri = new URI("ws://f732a04e.ngrok.io/");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        mWebSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake serverHandshake) {
+                Log.i("Websocket", "Opened");
+            }
+
+            @Override
+            public void onMessage(String s) {
+                final String message = s;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(message);
+                        printToUserStateTextView(message);
+                    }
+                });
+            }
+
+            @Override
+            public void onClose(int i, String s, boolean b) {
+                Log.i("Websocket", "Closed " + s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.i("Websocket", "Error " + e.getMessage());
+            }
+        };
+        mWebSocketClient.connect();
+    }
+
+}
+
+
+
+
+
+

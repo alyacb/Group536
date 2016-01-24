@@ -1,38 +1,73 @@
 import UIKit
+import Starscream
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, WebSocketDelegate {
 
-  @IBOutlet weak var accelerationProgressBar: UIProgressView!
-  @IBOutlet weak var helloLabel: UILabel!
-  @IBOutlet weak var accelerationLabel: UILabel!
-  @IBOutlet weak var armLabel: UILabel!
-  @IBOutlet weak var gyroscopeLabel: UILabel!
+	@IBOutlet weak var accelerationProgressBar: UIProgressView!
+	@IBOutlet weak var helloLabel: UILabel!
+	@IBOutlet weak var accelerationLabel: UILabel!
+	@IBOutlet weak var armLabel: UILabel!
+	@IBOutlet weak var gyroscopeLabel: UILabel!
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
+	var currentZ: Float = 0.0
+	var lastZ: Float = 0.0
 
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "didRecieveGyroScopeEvent:", name: TLMMyoDidReceiveGyroscopeEventNotification, object: nil)
-  }
+	var socket = WebSocket(url: NSURL(string: "ws://7106d781.ngrok.io:8080")!)
 
-  @IBAction func didTapSettings(sender: AnyObject) {
-    // Settings view must be in a navigation controller when presented
-    let controller = TLMSettingsViewController.settingsInNavigationController()
-    presentViewController(controller, animated: true, completion: nil)
-  }
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		socket.delegate = self
+		socket.connect()
 
-  func didRecieveGyroScopeEvent(notification: NSNotification) {
-    let eventData = notification.userInfo as! Dictionary<NSString, TLMGyroscopeEvent>
-    let gyroEvent = eventData[kTLMKeyGyroscopeEvent]!
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didRecieveGyroScopeEvent:", name: TLMMyoDidReceiveGyroscopeEventNotification, object: nil)
+	}
 
-	let date = NSDate().timeIntervalSince1970
+	// MARK: - Myo stuff
 
-    let gyroData = GLKitPolyfill.getGyro(gyroEvent)
-    // Uncomment to display the gyro values
-        let x = gyroData.x
-        let y = gyroData.y
-        let z = gyroData.z
-        gyroscopeLabel.text = "Gyro: (\(x), \(y), \(z))"
-		print("\(date), \(x), \(y), \(z)")
-  }
+	@IBAction func didTapSettings(sender: AnyObject) {
+		// Settings view must be in a navigation controller when presented
+		let controller = TLMSettingsViewController.settingsInNavigationController()
+		presentViewController(controller, animated: true, completion: nil)
+	}
+
+	func didRecieveGyroScopeEvent(notification: NSNotification) {
+		let eventData = notification.userInfo as! Dictionary<NSString, TLMGyroscopeEvent>
+		let gyroEvent = eventData[kTLMKeyGyroscopeEvent]!
+
+		let gyroData = GLKitPolyfill.getGyro(gyroEvent)
+		lastZ = currentZ
+		currentZ = gyroData.z
+		if currentZ > 0 && lastZ < 0 {
+			print("ping")
+			socket.writePing(NSData())
+		}
+
+		gyroscopeLabel.text = "Gyro: \(currentZ))"
+
+	}
+
+
+	// MARK: - websocket stuff
+
+	func websocketDidConnect(ws: WebSocket) {
+		print("websocket is connected")
+	}
+
+	func websocketDidDisconnect(ws: WebSocket, error: NSError?) {
+		if let e = error {
+			print("websocket is disconnected: \(e.localizedDescription)")
+		} else {
+			print("websocket disconnected")
+		}
+	}
+
+	func websocketDidReceiveMessage(ws: WebSocket, text: String) {
+		print("Received text: \(text)")
+	}
+
+	func websocketDidReceiveData(ws: WebSocket, data: NSData) {
+		print("Received data: \(data.length)")
+	}
+
 }
 

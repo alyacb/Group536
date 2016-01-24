@@ -6,6 +6,7 @@ class ViewController: UIViewController, WebSocketDelegate {
 
 	@IBOutlet weak var gyroscopeLabel: UILabel!
 	@IBOutlet weak var status: UILabel!
+	@IBOutlet weak var accelLabel: UILabel!
 	
 	var currentZ: Float = 0.0
 	var lastZ: Float = 0.0
@@ -22,6 +23,7 @@ class ViewController: UIViewController, WebSocketDelegate {
 		socket.connect()
 
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didRecieveGyroScopeEvent:", name: TLMMyoDidReceiveGyroscopeEventNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didReceiveAccelEvent:", name: TLMMyoDidReceiveAccelerometerEventNotification, object: nil)
 
 		JLToastView.setDefaultValue(
 			UIColor.redColor(),
@@ -46,7 +48,6 @@ class ViewController: UIViewController, WebSocketDelegate {
 
 		let gyroData = GLKitPolyfill.getGyro(gyroEvent)
 
-
 		currentZ = gyroData.z
 		lastZ = lastZ == 0 ? currentZ : lastZ
 
@@ -69,6 +70,18 @@ class ViewController: UIViewController, WebSocketDelegate {
 		lastZ = currentZ
 
 	}
+
+	func didReceiveAccelEvent(notification: NSNotification) {
+		let eventData = notification.userInfo as! Dictionary<NSString, TLMAccelerometerEvent>
+		let data = eventData[kTLMKeyAccelerometerEvent]
+		if let vec = data?.vector {
+			let result = TLMVector3Length(vec)
+			self.accelLabel.text = "Accel: \(result)"
+		}
+	}
+
+
+
 
 
 	// MARK: - websocket stuff
@@ -104,7 +117,6 @@ class ViewController: UIViewController, WebSocketDelegate {
 		if let result = result {
 			self.status.text = (text as NSString).substringWithRange(result.rangeAtIndex(1))
 		}
-
 
 	}
 

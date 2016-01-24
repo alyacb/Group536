@@ -46,16 +46,21 @@
                                     <action selector="didTapSettings:" destination="BYZ-38-t0r" eventType="touchUpInside" id="o9N-T7-Ayp"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="ws://1fc30902.ngrok.io" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="grD-2g-lFV">
+                                <rect key="frame" x="75" y="344" width="170" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uc2-TY-5wv">
-                                <rect key="frame" x="127" y="344" width="66" height="30"/>
+                                <rect key="frame" x="127" y="404" width="66" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accel: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Djp-Do-fkR">
-                                <rect key="frame" x="123" y="404" width="75" height="30"/>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Accel: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Djp-Do-fkR">
+                                <rect key="frame" x="123" y="0.0" width="75" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -64,21 +69,23 @@
                             <constraint firstItem="uc2-TY-5wv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="0zT-56-zRp"/>
                             <constraint firstItem="ROi-7e-oIt" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="3EO-Ox-Nrn"/>
                             <constraint firstItem="fU0-g5-Jxl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="66Q-sq-ImB"/>
-                            <constraint firstItem="Djp-Do-fkR" firstAttribute="top" secondItem="uc2-TY-5wv" secondAttribute="bottom" constant="30" id="Acr-ua-k2G"/>
+                            <constraint firstItem="grD-2g-lFV" firstAttribute="top" secondItem="2wO-pC-NvH" secondAttribute="bottom" constant="30" id="7ec-jz-Vj3"/>
                             <constraint firstItem="ROi-7e-oIt" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="30" id="Czf-BZ-7ap"/>
                             <constraint firstItem="5sf-bM-I4j" firstAttribute="top" secondItem="ROi-7e-oIt" secondAttribute="bottom" constant="30" id="E8g-IX-2qw"/>
                             <constraint firstItem="fU0-g5-Jxl" firstAttribute="top" secondItem="5sf-bM-I4j" secondAttribute="bottom" constant="30" id="EV1-NL-sb7"/>
+                            <constraint firstItem="grD-2g-lFV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Hp7-PN-kDt"/>
                             <constraint firstItem="2wO-pC-NvH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="RPo-pM-ex8"/>
                             <constraint firstItem="2wO-pC-NvH" firstAttribute="top" secondItem="fU0-g5-Jxl" secondAttribute="bottom" constant="30" id="Sa0-su-EJG"/>
                             <constraint firstItem="Djp-Do-fkR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="YiS-Mb-fwi"/>
+                            <constraint firstItem="uc2-TY-5wv" firstAttribute="top" secondItem="grD-2g-lFV" secondAttribute="bottom" constant="30" id="fgt-d1-mNi"/>
                             <constraint firstItem="5sf-bM-I4j" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="pXk-0R-TJg"/>
-                            <constraint firstItem="uc2-TY-5wv" firstAttribute="top" secondItem="2wO-pC-NvH" secondAttribute="bottom" constant="30" id="y6M-0e-Rrx"/>
                         </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="accelLabel" destination="Djp-Do-fkR" id="QsJ-XM-CaX"/>
                         <outlet property="gyroscopeLabel" destination="uc2-TY-5wv" id="GbH-di-kvI"/>
+                        <outlet property="serverURL" destination="grD-2g-lFV" id="F6f-1o-35Q"/>
                         <outlet property="status" destination="ROi-7e-oIt" id="tL6-ed-Zad"/>
                     </connections>
                 </viewController>

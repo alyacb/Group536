@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '57436011F8B0511DB4376B6E'
+               BlueprintIdentifier = '01C9D3689EB0E51560CB46C3'
                BlueprintName = 'Pods-HelloMyoSwift'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'Pods_HelloMyoSwift.framework'>

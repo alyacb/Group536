@@ -2,11 +2,13 @@ import UIKit
 import Starscream
 import JLToast
 
-class ViewController: UIViewController, WebSocketDelegate {
+class ViewController: UIViewController, WebSocketDelegate, UITextFieldDelegate {
 
 	@IBOutlet weak var gyroscopeLabel: UILabel!
 	@IBOutlet weak var status: UILabel!
 	@IBOutlet weak var accelLabel: UILabel!
+	
+	@IBOutlet weak var serverURL: UITextField!
 	
 	var currentZ: Float = 0.0
 	var lastZ: Float = 0.0
@@ -15,21 +17,23 @@ class ViewController: UIViewController, WebSocketDelegate {
 	var message = ""
 	var controller: UINavigationController? = nil
 
-	var socket = WebSocket(url: NSURL(string: "ws://f732a04e.ngrok.io")!)
+	var socket: WebSocket?
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		socket.delegate = self
-		socket.connect()
 
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didRecieveGyroScopeEvent:", name: TLMMyoDidReceiveGyroscopeEventNotification, object: nil)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didReceiveAccelEvent:", name: TLMMyoDidReceiveAccelerometerEventNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didReceiveGestureEvent:", name: TLMMyoDidReceivePoseChangedNotification, object: nil)
 
 		JLToastView.setDefaultValue(
 			UIColor.redColor(),
 			forAttributeName: JLToastViewBackgroundColorAttributeName,
 			userInterfaceIdiom: .Phone
 		)
+
+		self.serverURL.delegate = self
+
 	}
 
 	// MARK: - Myo stuff
@@ -57,10 +61,10 @@ class ViewController: UIViewController, WebSocketDelegate {
 		if lastZ < 0 && currentZ > 0 {
 //			print("ping")
 
-			let dataString = "{ \"timestamp\": \(date), \"peak\": \(theMax), \"trough\": \(theMin) }"
+			let dataString = "{ \"type\": \"gait\", \"timestamp\": \(date), \"peak\": \(theMax), \"trough\": \(theMin) }"
 			NSLog("\(theMax), \(theMin)")
 
-			socket.writeString(dataString)
+			socket?.writeString(dataString)
 
 			theMax = 0
 			theMin = 0
@@ -78,6 +82,20 @@ class ViewController: UIViewController, WebSocketDelegate {
 			let result = TLMVector3Length(vec)
 			self.accelLabel.text = "Accel: \(result)"
 		}
+	}
+
+	func didReceiveGestureEvent(notification: NSNotification) {
+		let eventData = notification.userInfo as! Dictionary<NSString, TLMPose>
+		let type = eventData[kTLMKeyPose]?.type
+		if let type = type {
+			switch type {
+			case .DoubleTap, .FingersSpread, .Fist, .Rest, .Unknown, .WaveIn, .WaveOut:
+			NSLog("------------------> sending: \(type.rawValue)")
+			socket?.writeString("{ \"type\": \"gesture\", \"gesture\": \"\(type.rawValue)\" }")
+			}
+
+		}
+
 	}
 
 
@@ -125,10 +143,42 @@ class ViewController: UIViewController, WebSocketDelegate {
 	}
 
 	@IBAction func toConnectServer(sender: UIButton) {
-		socket.connect()
+		if let socket = socket {
+			if socket.isConnected {
+				JLToast.makeText("server already connected").show()
+			} else {
+				socket.connect()
+			}
+		} else {
+			socket = WebSocket(url: NSURL(string: self.serverURL.text!)!)
+			socket!.delegate = self
+			socket!.connect()
+		}
 	}
+
 	@IBAction func toDisconnectServer(sender: UIButton) {
-		socket.disconnect()
+		socket?.disconnect()
 	}
+
+
+	// MARK: - textfieldDelegate
+
+	func textFieldDidEndEditing(textField: UITextField) {
+		if socket == nil {
+			socket = WebSocket(url: NSURL(string: self.serverURL.text!)!)
+			socket!.delegate = self
+			socket!.connect()
+		} else if !socket!.isConnected {
+			socket!.connect()
+		} else {
+			JLToast.makeText("server already connected").show()
+		}
+	}
+
+	func textFieldShouldReturn(textField: UITextField) -> Bool {
+		self.serverURL.resignFirstResponder()
+		return false
+	}
+
 }
 

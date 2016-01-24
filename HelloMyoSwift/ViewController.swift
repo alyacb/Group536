@@ -1,5 +1,6 @@
 import UIKit
 import Starscream
+import JLToast
 
 class ViewController: UIViewController, WebSocketDelegate {
 
@@ -21,6 +22,12 @@ class ViewController: UIViewController, WebSocketDelegate {
 		socket.connect()
 
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "didRecieveGyroScopeEvent:", name: TLMMyoDidReceiveGyroscopeEventNotification, object: nil)
+
+		JLToastView.setDefaultValue(
+			UIColor.redColor(),
+			forAttributeName: JLToastViewBackgroundColorAttributeName,
+			userInterfaceIdiom: .Phone
+		)
 	}
 
 	// MARK: - Myo stuff
@@ -68,6 +75,8 @@ class ViewController: UIViewController, WebSocketDelegate {
 
 	func websocketDidConnect(ws: WebSocket) {
 		NSLog("websocket is connected")
+		JLToast.makeText("server connected").show()
+
 	}
 
 	func websocketDidDisconnect(ws: WebSocket, error: NSError?) {
@@ -76,6 +85,7 @@ class ViewController: UIViewController, WebSocketDelegate {
 		} else {
 			NSLog("websocket disconnected")
 		}
+		JLToast.makeText("server disconnected").show()
 
 		self.controller?.dismissViewControllerAnimated(true, completion: nil)
 

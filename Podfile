@@ -5,5 +5,6 @@
 
 target 'HelloMyoSwift' do
 pod 'Starscream', '~> 1.1.1'
+pod 'JLToast'
 end
 

@@ -12,5 +12,4 @@
 #import "HelloMyoSwift/GLKitPolyfill.h"
 #import "MyoKit/MyoKit.h"
 
-
 #endif /* HelloMyoSwift_Bridging_Header_h */

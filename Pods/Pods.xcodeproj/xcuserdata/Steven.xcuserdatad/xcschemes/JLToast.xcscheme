@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '60C246D930B2FA0C64B63A62'
-               BlueprintName = 'Starscream'
+               BlueprintIdentifier = 'AC07A9115256D8DA7E84E2C9'
+               BlueprintName = 'JLToast'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'Starscream.framework'>
+               BuildableName = 'JLToast.framework'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

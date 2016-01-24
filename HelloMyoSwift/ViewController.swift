@@ -11,8 +11,11 @@ class ViewController: UIViewController, WebSocketDelegate {
 
 	var currentZ: Float = 0.0
 	var lastZ: Float = 0.0
+	var theMax: Float = 0.0
+	var theMin: Float = 0.0
+	var message = ""
 
-	var socket = WebSocket(url: NSURL(string: "ws://7106d781.ngrok.io:8080")!)
+	var socket = WebSocket(url: NSURL(string: "ws://f732a04e.ngrok.io")!)
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -34,15 +37,31 @@ class ViewController: UIViewController, WebSocketDelegate {
 		let eventData = notification.userInfo as! Dictionary<NSString, TLMGyroscopeEvent>
 		let gyroEvent = eventData[kTLMKeyGyroscopeEvent]!
 
+		let date = NSDate().timeIntervalSince1970
+
 		let gyroData = GLKitPolyfill.getGyro(gyroEvent)
-		lastZ = currentZ
+
+
 		currentZ = gyroData.z
-		if currentZ > 0 && lastZ < 0 {
-			print("ping")
-			socket.writePing(NSData())
+		lastZ = lastZ == 0 ? currentZ : lastZ
+
+		theMax = max(currentZ, theMax)
+		theMin = min(currentZ, theMin)
+
+		if lastZ < 0 && currentZ > 0 {
+//			print("ping")
+
+			let dataString = "{ \"timestamp\": \(date), \"peak\": \(theMax), \"trough\": \(theMin) }"
+//			print("\(theMax), \(theMin)")
+
+			socket.writeString(dataString)
+
+			theMax = 0
+			theMin = 0
 		}
 
 		gyroscopeLabel.text = "Gyro: \(currentZ))"
+		lastZ = currentZ
 
 	}
 
@@ -62,7 +81,11 @@ class ViewController: UIViewController, WebSocketDelegate {
 	}
 
 	func websocketDidReceiveMessage(ws: WebSocket, text: String) {
-		print("Received text: \(text)")
+		if message != text {
+			print("Updated gait: \(text)")
+		}
+		message = text
+
 	}
 
 	func websocketDidReceiveData(ws: WebSocket, data: NSData) {
